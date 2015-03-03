@@ -52,7 +52,7 @@ session_start();
 FacebookSession::setDefaultApplication( '1483942438522701','d188ca5467347a410eb967d6bff396d6' );
  
 // login helper with redirect_uri
-$helper = new FacebookRedirectLoginHelper( 'http://hubofallthings.com/HAT-Apps/src/facebookfeedapp.php' );
+$helper = new FacebookRedirectLoginHelper( 'http://hubofallthings.com/HAT-Apps/facebook/src/facebookfeedapp.php' );
  
 // see if a existing session exists
 if ( isset( $_SESSION ) && isset( $_SESSION['fb_token'] ) ) {
@@ -99,7 +99,7 @@ if ( isset( $session ) )
   $session = new FacebookSession( $session->getToken() );
   
   // graph api request for user data
-  $graphObject = (new FacebookRequest($session, 'GET', '/me?fields=feed.since('.$currentdate.')'))->execute()->getGraphObject()->asArray();
+  $graphObject = (new FacebookRequest( $session, 'GET', '/me?fields=since.('$currentdate')'))->execute()->getGraphObject()->asArray();
   
   //echo  '<pre>' . print_r( $graphObject, 1 ) . '</pre>';
 
@@ -140,7 +140,7 @@ $number_of_comments = count($graphObject['from']->data->comments->data);
 $CommentsFacebooknumber = 0;
 
 
- while ($feednumber <= $number_of_feed_items)
+ while ($feednumber < 5)
   {
     if (isset ($graphObject['feed']->data[$feednumber]->from->name))
       {
@@ -223,7 +223,7 @@ $CommentsFacebooknumber = 0;
       }
       else
       {
-        $FeedApplicationName = "Facebook";
+        $FeedApplicationName = "N/A";
       } 
       /*
       while ($WithFacebooknumber < $number_of_likes)
@@ -240,17 +240,13 @@ $CommentsFacebooknumber = 0;
           {
             $FeedMessageFromName = $graphObject['feed']->data[$feednumber]->comments->data[0]->from->name;
           }
-
+        if (isset ($graphObject['feed']->data[$feednumber]->comments->data[0]->message))
+          {
+            $FeedMessage = $graphObject['feed']->data[$feednumber]->comments->data[0]->message;
           }
-          */
-        
-        
-      if (isset ($graphObject['feed']->data[$feednumber]->message))
-      {
-          $FeedMessage = $graphObject['feed']->data[$feednumber]->message;
-      }
-        
-      
+          $CommentsFacebooknumber++  
+      } 
+      */
       if (isset ($graphObject['feed']->data[$feednumber]->created_time))
       {
         $CreatedTime = $graphObject['feed']->data[$feednumber]->created_time;
@@ -676,8 +672,8 @@ $post_fields_event = array(
         "id" => "b7130162-b525-4769-91d9-7128049249c3",
         "timestamp" => $feedstartTimestamp,
         "value" => $PrivacyType,
-        "unit" => 12,
-        "data_type" => 12,
+        "unit" => 4,
+        "data_type" => 4,
         "description" => "Privacy Type"
     ))
 );
@@ -910,20 +906,18 @@ $responseData = json_decode($response, TRUE);
 // Print response data
 print_r($responseData);
 }
-*/
 
 // Post fields rsvp_status
 $post_fields_event = array(
-    "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
+    "device_id" => "90c5f22e-5586-4dba-ac51-171dfcdf0113",
 
     // Use JSON encode here just to make sure everything is valid json
     "data" => json_encode(array(
-        "id" => "90c5f22e-5586-4dba-ac51-171dfcdf0113",
-        "timestamp" => $feedstartTimestamp,
+        "timestamp" => $CurrentTime,
         "value" => $FeedMessage,
-        "unit" => 12,
-        "data_type" => 12,
-        "description" => "Feed Message"
+        "unit" => 4,
+        "data_type" => 4,
+        "description" => "Event Start Type"
     ))
 );
 // This function builds a valid POST query string
@@ -951,8 +945,9 @@ $responseData = json_decode($response, TRUE);
 // Decode the response
 // Print response data
 print_r($responseData);
+}
 
-
+*/
 
 // Post fields rsvp_status
 $post_fields_event = array(
@@ -1082,11 +1077,11 @@ if ($eventsucess = "sucess" ) {
 }
 else 
   // print logout url using session and redirect_uri (logout.php page should destroy the session)
-  echo '<a href="' . $helper->getLogoutUrl( $session, 'http://hubofallthings.com/app/HAT-Apps/src' ) . '">Logout</a>';
+  echo '<a href="' . $helper->getLogoutUrl( $session, 'http://hubofallthings.com/app/HAT-Apps/facebook/src' ) . '">Logout</a>';
   
 } else {
   // show login url
-  echo '<a href="' . $helper->getLoginUrl( array( 'email', 'user_friends', 'user_events', 'publish_stream', 'user_photos', 'user_location', 'user_interests', 'user_events', 'user_activities', 'user_status', 'user_about_me', 'read_stream' ) ) . '">Login</a>';
+  echo '<a href="' . $helper->getLoginUrl( array( 'email', 'user_friends', 'user_events', 'publish_stream', 'read_stream' ) ) . '">Login</a>';
 }
 
 ?>
