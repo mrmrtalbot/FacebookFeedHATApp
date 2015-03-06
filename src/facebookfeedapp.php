@@ -142,6 +142,10 @@ $CommentsFacebooknumber = 0;
 
  while ($feednumber < 5)
   {
+    if (isset ($graphObject['feed']->data[$feednumber]->id))
+      {
+        $FeedID = $graphObject['feed']->data[$feednumber]->id;     
+      }
     if (isset ($graphObject['feed']->data[$feednumber]->from->name))
       {
         $FacebookAccountName = $graphObject['feed']->data[$feednumber]->from->name;     
@@ -293,6 +297,44 @@ $currentDateTimestamp = strtotime($currentdate);
 echo $FacebookAccountName;
 
 $fullName = preg_split('/\s+/', $FacebookAccountName);
+
+$post_fields_event = array(
+    "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
+
+   // Use JSON encode here just to make sure everything is valid json
+    "data" => json_encode(array(
+        "id" => '9f861679-a11d-40b4-bc18-80b95c88f847',
+        "timestamp" => $feedstartTimestamp,
+        "value" => $FeedID,
+        "unit" => 12,
+        "data_type" => 12,
+        "description" => "The FeedID number"
+    ))
+);
+// This function builds a valid POST query string
+$post_query_string = http_build_query($post_fields_event);
+
+// Setup cURL
+$ch = curl_init('http://dp02.hubofallthings.net/api/v1/sensor_data/');
+curl_setopt_array($ch, array(
+    CURLOPT_POST => TRUE,
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_POSTFIELDS => $post_query_string
+));
+
+// Send the request
+$response = curl_exec($ch);
+
+// Check for errors
+if($response === FALSE){
+    die(curl_error($ch));
+}
+
+// Decode the response
+$responseData = json_decode($response, TRUE);
+
+// Print response data
+print_r($responseData);
 
 $post_fields_event = array(
     "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
