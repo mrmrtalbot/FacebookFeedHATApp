@@ -233,7 +233,7 @@ $CommentsFacebooknumber = 0;
       {
         $FeedApplicationName = "Facebook";
       } 
-      /*
+      
       while ($WithFacebooknumber < $number_of_likes)
       {
         if (isset ($graphObject['feed']->data[$feednumber]->likes->data[0]->name))
@@ -250,7 +250,7 @@ $CommentsFacebooknumber = 0;
           }
 
           }
-          */
+          
         
         
       if (isset ($graphObject['feed']->data[$feednumber]->message))

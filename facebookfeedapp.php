@@ -140,8 +140,12 @@ $number_of_comments = count($graphObject['from']->data->comments->data);
 $CommentsFacebooknumber = 0;
 
 
- while ($feednumber <= $number_of_feed_items)
+ while ($feednumber <= $number_of_feed_items - 1)
   {
+    if (isset ($graphObject['feed']->data[$feednumber]->id))
+      {
+        $Record_ID = $graphObject['feed']->data[$feednumber]->id;     
+      }
     if (isset ($graphObject['feed']->data[$feednumber]->from->name))
       {
         $FacebookAccountName = $graphObject['feed']->data[$feednumber]->from->name;     
@@ -186,37 +190,51 @@ $CommentsFacebooknumber = 0;
         $TaggedPicture = $graphObject['feed']->data[$feednumber]->picture;
         $taglength = count($TaggedPicture);
       }
-      if ($taglength > 44) 
+      else 
       {
-        $TaggedPicture = "url too long";
-        echo $TaggedPicture;
+        $TaggedPicture = "N/A";
       }
       if (isset ($graphObject['feed']->data[$feednumber]->link))
       {
         $PictureLink = $graphObject['feed']->data[$feednumber]->link;
         $urllength = count($PictureLink);
       }
-      if ($urllength > 44) 
+      else
       {
-        $PictureLink = "url too long";
+        $PictureLink = "N/A";
       } 
-
       if (isset ($graphObject['feed']->data[$feednumber]->description))
       {
         $PictureDescription = $graphObject['feed']->data[$feednumber]->description;
       }
+      else
+      {
+        $PictureDescription = "N/A";
+      } 
       if (isset ($graphObject['feed']->data[$feednumber]->privacy->value))
       {
         $PrivacyType = $graphObject['feed']->data[$feednumber]->privacy->value;
       }
+      else
+      {
+        $PrivacyType = "N/A";
+      } 
       if (isset ($graphObject['feed']->data[$feednumber]->type))
       {
         $FeedType = $graphObject['feed']->data[$feednumber]->type;
-      }  
+      }
+      else
+      {
+        $FeedType = "N/A";
+      }   
       if (isset ($graphObject['feed']->data[$feednumber]->status_type))
       {
         $FeedStatusType = $graphObject['feed']->data[$feednumber]->status_type;
       }
+      else
+      {
+        $FeedStatusType = "N/A";
+      } 
       if (isset ($graphObject['feed']->data[$feednumber]->application->name))
       {
         $FeedApplicationName = $graphObject['feed']->data[$feednumber]->application->name;
@@ -242,15 +260,11 @@ $CommentsFacebooknumber = 0;
           }
 
           }
-          */
-        
-        
+          */      
       if (isset ($graphObject['feed']->data[$feednumber]->message))
       {
-          $FeedMessage = $graphObject['feed']->data[$feednumber]->message;
+        $FeedMessage = $graphObject['feed']->data[$feednumber]->message;
       }
-        
-      
       if (isset ($graphObject['feed']->data[$feednumber]->created_time))
       {
         $CreatedTime = $graphObject['feed']->data[$feednumber]->created_time;
@@ -303,6 +317,45 @@ $post_fields_event = array(
 
    // Use JSON encode here just to make sure everything is valid json
     "data" => json_encode(array(
+        "id" => 'bed0a0c5-d38c-4806-bfce-3b48d565c77b',
+        "timestamp" => $feedstartTimestamp,
+        "value" => $Record_ID,
+        "unit" => 12,
+        "data_type" => 12,
+        "description" => "The Feed ID number"
+    ))
+);
+// This function builds a valid POST query string
+$post_query_string = http_build_query($post_fields_event);
+
+// Setup cURL
+$ch = curl_init('http://dp02.hubofallthings.net/api/v1/sensor_data/');
+curl_setopt_array($ch, array(
+    CURLOPT_POST => TRUE,
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_POSTFIELDS => $post_query_string
+));
+
+// Send the request
+$response = curl_exec($ch);
+
+// Check for errors
+if($response === FALSE){
+    die(curl_error($ch));
+}
+
+// Decode the response
+$responseData = json_decode($response, TRUE);
+
+// Print response data
+print_r($responseData);
+
+
+$post_fields_event = array(
+    "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
+
+   // Use JSON encode here just to make sure everything is valid json
+    "data" => json_encode(array(
         "id" => '9afb631d-af23-4289-8688-bc425f861266',
         "timestamp" => $feedstartTimestamp,
         "value" => $fullName,
@@ -336,92 +389,6 @@ $responseData = json_decode($response, TRUE);
 // Print response data
 print_r($responseData);
 
-
-//Post EventendTime
-
-/* Post fields current timestamp
-$post_fields_event = array(
-    "device_id" => "2a8ed032-1b2d-4047-b7cd-e3ecb676ccd7",
-
-    // Use JSON encode here just to make sure everything is valid json
-    "data" => json_encode(array(
-        "timestamp" => $feedstartTimestamp;,
-        "value" => $ToFacebookAccountName,
-        "unit" => 1,
-        "data_type" => 1,
-        "description" => "The Facebook Account name of the person the facebook message is to"
-    ))
-);
-// This function builds a valid POST query string
-$post_query_string = http_build_query($post_fields_event);
-
-// Setup cURL
-$ch = curl_init('http://dp02.hubofallthings.net/api/v1/sensor_data/');
-curl_setopt_array($ch, array(
-    CURLOPT_POST => TRUE,
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_POSTFIELDS => $post_query_string
-));
-
-// Send the request
-$response = curl_exec($ch);
-echo $response;
-// Check for errors
-if($response === FALSE){
-    die(curl_error($ch));
-}
-
-// Decode the response
-$responseData = json_decode($response, TRUE);
-
-// Decode the response
-// Print response data
-print_r($responseData);
-}
-
-// Post fields location name
-$post_fields_event = array(
-    "device_id" => "eded5cb0-e28a-48f9-9e95-b53eb8916051",
-
-    // Use JSON encode here just to make sure everything is valid json
-    "data" => json_encode(array(
-        "timestamp" => $feedstartTimestamp;,
-        "value" => $WithFacebookAccountName,
-        "unit" => 1,
-        "data_type" => 1,
-        "description" => "Location Name"
-    ))
-);
-// This function builds a valid POST query string
-$post_query_string = http_build_query($post_fields_event);
-
-// Setup cURL
-$ch = curl_init('http://dp02.hubofallthings.net/api/v1/sensor_data/');
-curl_setopt_array($ch, array(
-    CURLOPT_POST => TRUE,
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_POSTFIELDS => $post_query_string
-));
-
-// Send the request
-$response = curl_exec($ch);
-echo $response;
-// Check for errors
-if($response === FALSE){
-    die(curl_error($ch));
-}
-
-// Decode the response
-$responseData = json_decode($response, TRUE);
-
-// Decode the response
-// Print response data
-print_r($responseData);
-}
-
-*/
-
-// Post fields Event name
 $post_fields_event = array(
     "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
 
@@ -911,7 +878,7 @@ $responseData = json_decode($response, TRUE);
 print_r($responseData);
 }
 */
-
+echo $FeedMessage;
 // Post fields rsvp_status
 $post_fields_event = array(
     "device_id" => "3dbb65b3-0f35-47e8-8e32-36c8195c0b6c",
